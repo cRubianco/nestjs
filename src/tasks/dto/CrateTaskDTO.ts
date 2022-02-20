@@ -1,5 +1,4 @@
-export class TaskDTO {
-  id: number;
+export class CreateTaskDTO {
   title: string;
   description: string;
   state: boolean;
