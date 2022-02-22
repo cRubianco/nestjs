@@ -1,21 +1,30 @@
 import { Module } from '@nestjs/common';
 import { TasksModule } from './tasks/tasks.module';
-import { ConfigModule } from '@nestjs/config';
-import Joi from 'joi';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+
+import { Constants } from "./utils/constants";
 
 @Module({
   imports: [
-    TasksModule,
-    // ConfigModule.forRoot({
-/*       validationSchema: Joi.object({
-        MYSQL_HOST: Joi.string().required(),
-        MYSQL_PORT: Joi.number().required(),
-        MYSQL_USER: Joi.string().required(),
-        MYSQL_PASSWORD: Joi.string().required(),
-        MYSQL_DB: Joi.string().required(), */
-/*       })
-    }) */
-],
+    ConfigModule.forRoot({
+      envFilePath: '.env',
+      isGlobal: true
+    }),
+    TypeOrmModule.forRootAsync({
+      useFactory: (configService: ConfigService) => ({
+        type: 'mysql',
+        host: configService.get<string>(Constants.DB.DB_HOST),
+        port: +configService.get<number>(Constants.DB.DB_PORT),
+        database: configService.get<string>(Constants.DB.DB_DATABASE),
+        username: configService.get<string>(Constants.DB.DB_USER),
+        password: configService.get<string>(Constants.DB.DB_PASSWORD),
+        entities: [__dirname + '/../**/*.entity(.ts,.js)'],
+        synchronize: true,
+      }),
+      inject: [ConfigService],
+    })
+  ],
   controllers: [],
   providers: [],
 })
