@@ -1,15 +1,24 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-
-// tslint:disable-next-line: quotemark
-import { Task } from "../tasks/interfaces/Task";
-import { CreateTaskDTO } from './dto/CrateTaskDTO';
-import { TaskDTO } from './dto/taskDTO';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { CreateTaskDTO } from './dto/createTaskDTO';
+import { TaskEntity } from './task.entity';
+import { TaskRepository } from './task.repository';
 
 @Injectable()
 export class TasksService {
-  private lastTaskId = 0;
-  private tasks: Task[] = [];
 
+  constructor(
+    @InjectRepository(TaskEntity) 
+    private taskRepository: TaskRepository
+  ){}
+  
+  async getTasks(): Promise<TaskEntity[]> {
+    const tasksList = await this.taskRepository.find();
+    if (!tasksList.length) {
+      throw new NotFoundException({message: 'No se han encontrado tareas'});
+    }
+    return tasksList;
+  }
 /*   tasks: Task[] = [
     {
       id: 1,
@@ -19,33 +28,31 @@ export class TasksService {
     }
   ] */
 
-  getTasks() {
-    return this.tasks;
-  }
   // tslint:disable-next-line: no-trailing-whitespace
   
-  getTaskById(id: number) {
-    // tslint:disable-next-line: no-shadowed-variable
-    const task = this.tasks.find(task => task.id === id)
-    if (task) {
-      return task;
+  async getTaskById(id: number): Promise<TaskEntity> {
+    const task = await this.taskRepository.findOne(id);
+    if (!task) {
+      throw new NotFoundException({message: 'No se encontro la Tarea'});
     }
-    throw new HttpException('No se encontro la Tarea', HttpStatus.NOT_FOUND);
+    return task;
+  }
+  
+  async getTaskByTitle(title: string): Promise<TaskEntity> {
+    const task = await this.taskRepository.findOne({title: title});
+    return task;
   }
 
-  createTask(task: CreateTaskDTO){
-    const newTask = {
-      id: ++this.lastTaskId,
-      ...task
+  async createTask(dto: CreateTaskDTO): Promise<any>{
+    const task = this.taskRepository.create(dto)
+    await this.taskRepository.save(task);
     }
-    this.tasks.push(newTask);
-    return newTask;
   }
 
   updateTask(id: number, task: TaskDTO) {
     const taskIndex = this.tasks.findIndex(task => task.id === id);
     if (taskIndex > -1) {
-      this.tasks[taskIndex] = task;
+      // this.tasks[taskIndex] = task;
       return task;
     }
     throw new HttpException('No se encontro la tarea', HttpStatus.NOT_FOUND);
