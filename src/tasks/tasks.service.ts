@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateTaskDTO } from './dto/createTaskDTO';
+import { TaskDTO } from './dto/taskDTO';
 import { TaskEntity } from './task.entity';
 import { TaskRepository } from './task.repository';
 
@@ -19,17 +20,7 @@ export class TasksService {
     }
     return tasksList;
   }
-/*   tasks: Task[] = [
-    {
-      id: 1,
-      title: "Testing",
-      description: "Tarea1",
-      state: true
-    }
-  ] */
 
-  // tslint:disable-next-line: no-trailing-whitespace
-  
   async getTaskById(id: number): Promise<TaskEntity> {
     const task = await this.taskRepository.findOne(id);
     if (!task) {
@@ -46,24 +37,23 @@ export class TasksService {
   async createTask(dto: CreateTaskDTO): Promise<any>{
     const task = this.taskRepository.create(dto)
     await this.taskRepository.save(task);
-    }
+    return {message: 'Nueva Tarea creada'};
+  }
+  
+  async updateTask(id: number, dto: TaskDTO): Promise<any> {
+    const task = await this.getTaskById(id);
+    dto.title? task.title=dto.title : task.title=task.title;
+    dto.description
+      ? task.description=dto.description 
+      : task.description=task.description;
+    await this.taskRepository.save(task);  
+    return {message: `Se actualizo la tarea ${task.title} `};
   }
 
-  updateTask(id: number, task: TaskDTO) {
-    const taskIndex = this.tasks.findIndex(task => task.id === id);
-    if (taskIndex > -1) {
-      // this.tasks[taskIndex] = task;
-      return task;
-    }
-    throw new HttpException('No se encontro la tarea', HttpStatus.NOT_FOUND);
+  async deleteTask(id: number): Promise<any> {
+    const taskDelete = await this.getTaskById(id);
+    await this.taskRepository.delete(taskDelete);
+    return {message: `Se actualizo la tarea ${taskDelete.title} `};
   }
 
-  deleteTask(id: number) {
-    const taskIndex = this.tasks.findIndex(task => task.id === id);
-    if (taskIndex > -1) {
-      this.tasks.splice(taskIndex, 1);
-    } else {
-      throw new HttpException('No se encontro la tarea', HttpStatus.NOT_FOUND);
-    }
-  }
 }
