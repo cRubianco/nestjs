@@ -1,7 +1,6 @@
-import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, ParseIntPipe } from '@nestjs/common';
 import { CreateTaskDTO } from './dto/createTaskDTO';
 import { TaskDTO } from './dto/taskDTO';
-import { Task } from './interfaces/Task';
 import { TasksService } from './tasks.service';
 
 @Controller('tasks')
@@ -10,34 +9,30 @@ export class TasksController {
   constructor(private tasksService: TasksService) {}
   
   @Get()
-  getTasks(): Task[] {
-    return this.tasksService.getTasks();
+  async getTasks() {
+    return await this.tasksService.getTasks();
   }
 
   @Get(':id')
-  getTask(@Param('id') id: string) {
-    return this.tasksService.getTaskById(Number(id));
+  async getTask(@Param('id', ParseIntPipe) id: number) {
+    return await this.tasksService.getTaskById(id);
   }
 
   @Post()
-  async createTask(@Body() task: CreateTaskDTO) {
-    return this.tasksService.createTask(task);
+  async createTask(@Body() taskDTO: CreateTaskDTO) {
+    return await this.tasksService.createTask(taskDTO);
   }
 
   @Put(':id')
-  async editTask(@Param('id') id: string, @Body() task: TaskDTO) {
+  async updateTask(@Param('id', ParseIntPipe)id: number, @Body() taskDTO: TaskDTO) {
     console.log(id);
-    console.log(task);
-
-    return this.tasksService.updateTask(Number(id), task);
-    // return 'update task';
+    console.log(taskDTO);
+    return await this.tasksService.updateTask(id, taskDTO), {message: `Se actualizo la tarea ${taskDTO.title} `};
   }
 
   @Delete(':id')
-  deleteTask(@Param('id') id): string {
-    console.log(id);
-
-    return ' delete task';
+  async deleteTask(@Param('id', ParseIntPipe)id: number) {
+    return await this.tasksService.deleteTask(id), `delete task ${id}`;
   }
 
 }

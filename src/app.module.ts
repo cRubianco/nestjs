@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
-import { TasksModule } from './tasks/tasks.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 
 import { Constants } from "./utils/constants";
 
@@ -9,7 +10,7 @@ import { Constants } from "./utils/constants";
   imports: [
     ConfigModule.forRoot({
       envFilePath: '.env',
-      isGlobal: true
+      isGlobal: true,
     }),
     TypeOrmModule.forRootAsync({
       useFactory: (configService: ConfigService) => ({
@@ -21,11 +22,12 @@ import { Constants } from "./utils/constants";
         password: configService.get<string>(Constants.DB.DB_PASSWORD),
         entities: [__dirname + '/../**/*.entity(.ts,.js)'],
         synchronize: true,
+        logging: false,
       }),
       inject: [ConfigService],
     })
   ],
-  controllers: [],
-  providers: [],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}
