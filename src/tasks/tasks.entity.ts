@@ -12,4 +12,7 @@ export class TasksEntity {
   @Column({type: 'varchar', length:20, nullable: false})
   description: string;
   
+  @Column({type: 'tinyint'})
+  state: boolean;
+  
 }

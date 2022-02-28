@@ -49,6 +49,9 @@ export class TasksService {
     dto.description
      ?  task.description = dto.description
      :  task.description = task.description; 
+     dto.state
+     ?  task.state = dto.state
+     :  task.state = task.state; 
     await this.taskRepository.save(task);
     return {message: `Se actualizo la tarea con el título ${task.title} `}
   }  
