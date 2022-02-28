@@ -7,7 +7,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const confService = app.get(ConfigService);
   // Server port
-  const port  = +confService.get<number>(Constants.SERVER_PORT)
+  const port  = +confService.get<number>(Constants.SERVER_PORT) || 3000;
   await app.listen(port);
   console.log(`Server istening on port ${await app.getUrl()}`);
 }

@@ -5,7 +5,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
 import { Constants } from "./utils/constants";
-
+import { TasksModule } from './tasks/tasks.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -20,12 +20,17 @@ import { Constants } from "./utils/constants";
         database: configService.get<string>(Constants.DB.DB_DATABASE),
         username: configService.get<string>(Constants.DB.DB_USER),
         password: configService.get<string>(Constants.DB.DB_PASSWORD),
-        entities: [__dirname + '/../**/*.entity(.ts,.js)'],
+        // entities: [__dirname + '/../**/*.entity.ts'],
+        // entities: [join(__dirname, '**', '*.entity.{ts,js}')]
+        // entities: [__dirname + '**', '*.entity.{ts,js}'],
+        entities:[__dirname + '/**/*.entity.{ts,js}'],
         synchronize: true,
         logging: false,
       }),
       inject: [ConfigService],
-    })
+    }),
+    AppModule,
+    TasksModule, 
   ],
   controllers: [AppController],
   providers: [AppService],

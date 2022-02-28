@@ -2,7 +2,7 @@
  *  Constantes
  */
 export const Constants = {
-  SERVER_PORT: 'SERVER_PORT',    
+  SERVER_PORT: 'SERVER_PORT',
   DB: {
     DB_HOST: 'DB_HOST',
     DB_PORT: 'DB_PORT',
