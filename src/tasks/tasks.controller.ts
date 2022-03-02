@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, UsePipes, ValidationPipe } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { TaskDTO } from './dto/task.dto';
 
@@ -24,11 +24,13 @@ export class TasksController {
     return await this.taskService.getTaskByName(title);
   }
   
+  @UsePipes(new ValidationPipe({whitelist: true}))
   @Post()
   async createTask(@Body() dto: TaskDTO) {
     return await this.taskService.createTask(dto);
   }
 
+  @UsePipes(new ValidationPipe({whitelist: true}))
   @Put(':id')
   async updateTask(@Param('id', ParseIntPipe) id: number, @Body() dto: TaskDTO) {
     return await this.taskService.updateTask(id, dto);
