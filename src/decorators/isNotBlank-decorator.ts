@@ -9,13 +9,9 @@ export function IsNotBlank(validationOptions?: ValidationOptions) {
       options: validationOptions,
       validator: {
         validate(value: any) {
-          if (typeof value !== 'string') {
-            return false;
-          }
+          if (typeof value !== 'string') { return false; }
           const valueTrim = value.replace(/ /g, '');
-          if(valueTrim === "") {
-            return false;
-          }
+          if(valueTrim === "") { return false; }
           return true;
         },
       },

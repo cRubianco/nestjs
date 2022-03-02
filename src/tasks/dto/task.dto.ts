@@ -6,10 +6,10 @@ export class TaskDTO {
   @IsNotBlank({message: "El título no puede estar vacio"})
   title: string;
 
-  @IsString()
+  @IsString({message: "La descripción debe ser una cadena de caracteres"})
   @IsNotEmpty()
   description: string;
 
-  @IsBoolean()
+  @IsBoolean({message: "Espera un valor booleano"})
   state?: boolean;
 }

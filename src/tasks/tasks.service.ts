@@ -30,9 +30,6 @@ export class TasksService {
 
   async getTaskByName(name: string): Promise<TasksEntity> {
     const task = await this.taskRepository.findOne({title: name});
-    // if(!task) {
-    //   throw new NotFoundException({message: `No se encontro la tarea con el título ${name}`});
-    // }
     return task;
   }
 
@@ -43,20 +40,20 @@ export class TasksService {
     const task = this.taskRepository.create(dto);
     await this.taskRepository.save(task);
     // return {message: `Se creo una nueva tarea `}   
-    return new MessageDTO('producto creado');
+    return new MessageDTO('Nueva tarea creada');
   }
 
   async updateTask(id: number, dto: TaskDTO): Promise<any> {
     const task =  await this.getTaskById(id);
-    //Verifico si existe
+    //Verifico si existe ese ID
     if(!task) {
       throw new BadRequestException({message: 'La tarea no existe en la BD'})
     }
-    //Verifico si existe y son distintos los id
+/*     //Verifico si existe y son distintos los id
     const exists = await this.getTaskByName(dto.title);
-    if (exists && exists.id !== id) {
-      throw new BadRequestException({message: '.....'})
-    }
+    if (exists.id !== task.id) {
+      throw new BadRequestException({message: 'El título y el id de la tarea no coinciden ...'})
+    } */
     dto.title
      ?  task.title = dto.title
      :  task.title = task.title; 
@@ -74,7 +71,7 @@ export class TasksService {
   async deleteTask(id: number): Promise<any> {
     const task = await this.getTaskById(id);
     await this.taskRepository.delete(task);
-    return new MessageDTO(`Se borro la tarea con el título ${task.id} `);
+    return new MessageDTO(`Se borro la tarea con el título ${task.title} `);
   }
 
 }
